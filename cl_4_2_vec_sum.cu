@@ -11,6 +11,15 @@ __global__ void add(int* a, int* b, int* c)
     }
 }
 
+__global__ void add2(int* a, int* b, int* c)
+{
+    int tid = threadIdx.x;
+    if (tid < N)
+    {
+        c[tid] = a[tid] + b[tid];
+    }
+}
+
 int main() {
     int a[N], b[N], c[N];
 
@@ -41,7 +50,8 @@ int main() {
     // 1） Grid(不止一个)分配到Device上运行；
     // 2） Block分配到SM上运行；
     // 3） Thread分配到Core上运行。
-    add<<<N, 1>>>(dev_a, dev_b, dev_c); 
+    //add<<<N, 1>>>(dev_a, dev_b, dev_c); 
+    add2<<<1, N>>>(dev_a, dev_b, dev_c);
 
     HANDLE_ERROR(
         cudaMemcpy(c, dev_c, N*sizeof(int), cudaMemcpyDeviceToHost);
