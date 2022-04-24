@@ -1,6 +1,7 @@
 ﻿#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "add4device.cuh"
 /**
  * Listing 3.2 一个典型的CUDA程序基本框架
  * 头文件包含
@@ -24,7 +25,7 @@ const double a = 1.23;
 const double b = 2.34;
 const double c = 3.57;
 
-extern "C" __global__ void add(const double* x, const double* y, const double* z, int N);
+__global__ void add(const double* x, const double* y, double* z, int N);
 
 void check(const double* z, const int N);
 
@@ -48,7 +49,10 @@ int main()
     cudaMemcpy(d_y, h_y, M, cudaMemcpyHostToDevice);
     const int block_size = 128;
     const int grid_size = N / block_size;
-    add<<<grid_size, block_size>>>(d_x, d_y, d_z, N);
+    printf("block_size:%d, grid_size:%d\n", block_size, grid_size);
+
+    //add<<<grid_size, block_size>>>(d_x, d_y, d_z, N); 
+    add1<<<grid_size, block_size>>>(d_x, d_y, d_z, N);
     cudaMemcpy(h_z, d_z, M, cudaMemcpyDeviceToHost);
     check(h_z, N);
 
@@ -64,10 +68,14 @@ int main()
 __global__ void add(const double* x, const double* y, double* z, int N)
 {
     const int n = blockDim.x * blockIdx.x + threadIdx.x;
+    if (n >= N )
+    {
+        return;
+    }
     z[n] = x[n] + y[n];
     if (n < 10)
     {
-        printf("from block:%d, thread:%d", blockIdx.x, threadIdx.x);
+        printf("from block:%d, thread:%d\n", blockIdx.x, threadIdx.x);
     }
     if (n==10)
     {
@@ -75,7 +83,7 @@ __global__ void add(const double* x, const double* y, double* z, int N)
     }
     if (n > N - 10)
     {
-        printf("from block:%d, thread:%d", blockIdx.x, threadIdx.x);
+        printf("from block:%d, thread:%d\n", blockIdx.x, threadIdx.x);
     }
 }
 
