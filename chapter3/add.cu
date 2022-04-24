@@ -52,7 +52,7 @@ int main()
     printf("block_size:%d, grid_size:%d\n", block_size, grid_size);
 
     //add<<<grid_size, block_size>>>(d_x, d_y, d_z, N); 
-    add1<<<grid_size, block_size>>>(d_x, d_y, d_z, N);
+    add3<<<grid_size, block_size>>>(d_x, d_y, d_z, N);
     cudaMemcpy(h_z, d_z, M, cudaMemcpyDeviceToHost);
     check(h_z, N);
 
