@@ -1,4 +1,4 @@
-#include <math.h>
+﻿#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 /**
@@ -23,8 +23,9 @@ const double EPSILON = 1.0e-15;
 const double a = 1.23;
 const double b = 2.34;
 const double c = 3.57;
-void add(const double* x, const double* y, 
-    const double* z, const int N);
+
+extern "C" __global__ void add(const double* x, const double* y, const double* z, int N);
+
 void check(const double* z, const int N);
 
 int main()
@@ -45,9 +46,9 @@ int main()
     cudaMalloc((void**)&d_z, M);
     cudaMemcpy(d_x, h_x, M, cudaMemcpyHostToDevice);
     cudaMemcpy(d_y, h_y, M, cudaMemcpyHostToDevice);
-    const int block_zize = 128;
-    const int grid_size = N / block_zize;
-    add<<<grid_size, block_size>>>(d_x, d_y, d_z);
+    const int block_size = 128;
+    const int grid_size = N / block_size;
+    add<<<grid_size, block_size>>>(d_x, d_y, d_z, N);
     cudaMemcpy(h_z, d_z, M, cudaMemcpyDeviceToHost);
     check(h_z, N);
 
@@ -60,10 +61,10 @@ int main()
     return 0;
 }
 
-void __global__ add(const double* x, const double* y, double* z)
+__global__ void add(const double* x, const double* y, double* z, int N)
 {
-    const int n = blockDim * blockIdx.x + threadIdx.x;
-    z[n] = x[n + y[n]];
+    const int n = blockDim.x * blockIdx.x + threadIdx.x;
+    z[n] = x[n] + y[n];
     if (n < 10)
     {
         printf("from block:%d, thread:%d", blockIdx.x, threadIdx.x);
@@ -80,7 +81,7 @@ void __global__ add(const double* x, const double* y, double* z)
 
 void check(const double* z, const int N)
 {
-    bool has_error = flase;
+    bool has_error = false;
     for (int n=0; n<N; n++)
     {
         if (fabs(z[n] - c) > EPSILON)
