@@ -12,4 +12,4 @@ do {                                                                        \
         printf("    Error code:  %d\n", error_code);                        \
         printf("    Error text:  %s\n", cudaGetErrorString(error_code));    \
     }                                                                       \
-} while(0)                                                                  \
+} while(0)
