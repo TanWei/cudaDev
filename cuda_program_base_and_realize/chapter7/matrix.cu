@@ -28,6 +28,12 @@ __global__ void tanspose2(const real* A, real* B, const int N) {
     if (nx < N && ny < N)
     {
         B[ny * N + nx] = A[nx * N + ny];
+        // 读全局内存，非合并访问，编译器会通过缓存的方式缓解影响
+        // 有些架构不会调用__ldg()函数，从而不会进行读取全局内存的时，不会缓存
+        // 可以改为下面的写法，主动调用：
+        // if (nx < N && ny < N) {
+        //     B[ny * N + nx] = __ldg(&A[nx * N + ny])
+        // }
     }
 }
 
