@@ -1,4 +1,4 @@
-#inlcude "book.h"
+#inlcude "../common/book.h"
 
 #define N 10
 
@@ -25,9 +25,11 @@ int main() {
 
     int *dev_a, *dev_b, *dev_c;
 
-    HANDLE_ERROR( cudaMalloc( (void**)a, N * sizeof(int) ) );
-    HANDLE_ERROR( cudaMalloc( (void**)b, N * sizeof(int) ) );
-    HANDLE_ERROR( cudaMalloc( (void**)c, N * sizeof(int) ) );
+    HANDLE_ERROR( 
+        cudaMalloc( (void**)dev_a, N * sizeof(int) ) 
+    );
+    HANDLE_ERROR( cudaMalloc( (void**)dev_b, N * sizeof(int) ) );
+    HANDLE_ERROR( cudaMalloc( (void**)dev_c, N * sizeof(int) ) );
 
     for (int i=0; i<N; i++)
     {
@@ -50,6 +52,8 @@ int main() {
     // 1） Grid(不止一个)分配到Device上运行；
     // 2） Block分配到SM上运行；
     // 3） Thread分配到Core上运行。
+
+    //__global__返回值必为void，非void返回值类型没有意义
     //add<<<N, 1>>>(dev_a, dev_b, dev_c); 
     add2<<<1, N>>>(dev_a, dev_b, dev_c);
 
