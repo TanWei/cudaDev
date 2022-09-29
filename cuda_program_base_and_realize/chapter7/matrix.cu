@@ -46,5 +46,6 @@ int main()
 
     real* d_A;
     real* d_B;
+    // <<<{4, 4}, {32, 32}>>>
     copy<<<grid_size, block_size>>>(d_A, d_B, N);
 }

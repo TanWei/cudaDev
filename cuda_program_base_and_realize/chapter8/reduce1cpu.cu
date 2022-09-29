@@ -1,4 +1,4 @@
-#include "../real.cuh"
+#include "../"
 namespace reduce1cpu {
     /**
      * @brief 
